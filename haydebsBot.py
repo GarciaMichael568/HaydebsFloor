@@ -34,10 +34,14 @@ def get_recentlyListed(listedCount, nft):
 
 
 def get_totalListings(nft):
-    url =requests.get(f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/stats")
-    data = json.loads(url.text)
-    listedCount = data["listedCount"]
-    return listedCount
+    try:
+        url =requests.get(f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/stats")
+        data = json.loads(url.text)
+        listedCount = data["listedCount"]
+        return listedCount
+    except:
+        print("wrong nft")
+        return -1
     
 
 
@@ -59,6 +63,9 @@ async def on_message(message):
         return
     if message.content.startswith('!recent'):
         listedCount = get_totalListings(nftCollection)
+        if(listedCount == -1): 
+            await message.channel.send("Empty/Wrong NFT")
+            return
         results = get_recentlyListed(listedCount, nftCollection)
         #print(results)
         results = format_results(results)
@@ -66,5 +73,6 @@ async def on_message(message):
         await message.channel.send(results)
         #for nft in results:
         #await message.channel.send(nft)
+
 
 client.run(my_secret)
