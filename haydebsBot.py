@@ -22,9 +22,8 @@ client = discord.Client()
 
 #functions
 def get_recentlyListed(listedCount, nft):
-    url = requests.get(
-        f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/listings?offset={listedCount-5}&limit=5"
-    )
+    print(listedCount)
+    url = requests.get(f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/listings?offset={listedCount - 5}&limit=5")
     print(url)
     data = json.loads(url.text)
     results = []
@@ -35,7 +34,7 @@ def get_recentlyListed(listedCount, nft):
 
 
 def get_totalListings(nft):
-    url =requests.get(f"https://apimainnet.magiceden.dev/v2/collections/{nft}/stats")
+    url =requests.get(f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/stats")
     data = json.loads(url.text)
     listedCount = data["listedCount"]
     return listedCount
@@ -43,11 +42,7 @@ def get_totalListings(nft):
 
 
 def format_results(results):
-    newResults = [
-        "https://magiceden.io/item-details/" +
-        url if isinstance(url, str) else "Price: " + str(url)
-        for url in results
-    ]
+    newResults = ["https://magiceden.io/item-details/" + url if isinstance(url, str) else "Price: " + str(url) for url in results]
     return newResults
 
 
@@ -59,13 +54,11 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    nftCollection = "slowlanaslugs"
+    nftCollection = "famous_fox_federation"
     if message.author == client.user:
         return
     if message.content.startswith('!recent'):
-        print(message.content)
         listedCount = get_totalListings(nftCollection)
-        print(listedCount)
         results = get_recentlyListed(listedCount, nftCollection)
         #print(results)
         results = format_results(results)
@@ -73,6 +66,5 @@ async def on_message(message):
         await message.channel.send(results)
         #for nft in results:
         #await message.channel.send(nft)
-
 
 client.run(my_secret)
