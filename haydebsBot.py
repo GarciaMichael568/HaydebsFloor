@@ -5,6 +5,7 @@ import json
 import time
 import datetime
 import webbrowser
+import operator
 #from requests.exceptions import ConnectionError
 #get listing to adjust offset: most recent listings
 #api-mainnet.magiceden.dev/v2/collections/:symbol/listings?offset=0&limit=20
@@ -15,41 +16,57 @@ import webbrowser
 
 #https://magiceden.io/item-details/{tokenAddress}
 #buy/image
-my_secret = 'OTc1MjQ4OTU3OTI2MTU0MjUw.GpXccp.iwyA6pXkchhECpY2kA6G4XLx_59HG10rhQy8_0'
-#my_secret = os.environ['Bullish']
+my_secret = os.environ['Bullish']
 client = discord.Client()
 
 
 #functions
 def get_recentlyListed(listedCount, nft):
-    print(listedCount)
-    url = requests.get(f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/listings?offset={listedCount - 5}&limit=5")
+    print("listed count: " + listedCount)
+    url = requests.get(
+        f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/listings?offset={listedCount - 5}&limit=5"
+    )
     print(url)
     data = json.loads(url.text)
-    results = []
+    results = {}
     for token in data:
-        results.append(token["price"])
-        results.append(token["tokenMint"])
-    return results
+        results.update({token["tokenMint"]:token["price"]})
+    sorted_d = dict( sorted(results.items(), key=operator.itemgetter(1)))
+    return sorted_d
 
 
 def get_totalListings(nft):
     try:
-        url =requests.get(f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/stats")
+        url = requests.get(
+            f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/stats")
         data = json.loads(url.text)
         listedCount = data["listedCount"]
         return listedCount
     except:
-        print("wrong nft")
         return -1
-    
 
 
 def format_results(results):
-    newResults = ["https://magiceden.io/item-details/" + url if isinstance(url, str) else "Price: " + str(url) for url in results]
+    dictList = list(results.values())
+    big = list(results.keys())
+    end = []
+    for i in range(len(big)):
+      end.append(dictList[i])
+      end.append(big[i])
+    newResults = [
+        "https://magiceden.io/item-details/" +
+        url if isinstance(url, str) else "Price: " + str(url)
+        for url in end
+    ]
     return newResults
 
 
+def message_to_underscore(nft):
+    finalmessage = nft[8:]
+    finalmessage = finalmessage.replace(" ","_")
+    return finalmessage
+
+ 
 #main
 @client.event
 async def on_ready():
@@ -58,16 +75,16 @@ async def on_ready():
 
 @client.event
 async def on_message(message):
-    nftCollection = "famous_fox_federation"
+    #nftCollection = message_to_underscore(message.content)
     if message.author == client.user:
         return
     if message.content.startswith('!recent'):
+        nftCollection = message_to_underscore(message.content)
         listedCount = get_totalListings(nftCollection)
-        if(listedCount == -1): 
-            await message.channel.send("Empty/Wrong NFT")
+        if (listedCount == -1):
+            await message.channel.send("Couldn't find token: " + message.content)
             return
         results = get_recentlyListed(listedCount, nftCollection)
-        #print(results)
         results = format_results(results)
         results = '\n'.join(str(e) for e in results)
         await message.channel.send(results)
