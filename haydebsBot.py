@@ -22,7 +22,6 @@ client = discord.Client()
 
 #functions
 def get_recentlyListed(listedCount, nft):
-    print("listed count: " + listedCount)
     url = requests.get(
         f"https://api-mainnet.magiceden.dev/v2/collections/{nft}/listings?offset={listedCount - 5}&limit=5"
     )
@@ -79,17 +78,21 @@ async def on_message(message):
     if message.author == client.user:
         return
     if message.content.startswith('!recent'):
-        nftCollection = message_to_underscore(message.content)
+        nftCollection = message_to_underscore(message.content).lower()
+        print("Successfully captured nft name.")
         listedCount = get_totalListings(nftCollection)
         if (listedCount == -1):
             await message.channel.send("Couldn't find token: " + message.content)
             return
+        print("Successfully captured total listings.")
         results = get_recentlyListed(listedCount, nftCollection)
+        print("Succesfully captured recently listed.")
         results = format_results(results)
+        print("Succesfully formatted list.")
         results = '\n'.join(str(e) for e in results)
+        print("Successfully changed list to string.")
         await message.channel.send(results)
-        #for nft in results:
-        #await message.channel.send(nft)
+
 
 
 client.run(my_secret)
