@@ -79,18 +79,18 @@ async def on_message(message):
         return
     if message.content.startswith('!recent'):
         nftCollection = message_to_underscore(message.content).lower()
-        print("Successfully captured nft name.")
+        print("1. Successfully captured nft name.")
         listedCount = get_totalListings(nftCollection)
         if (listedCount == -1):
             await message.channel.send("Couldn't find token: " + message.content)
             return
-        print("Successfully captured total listings.")
+        print("2. Successfully captured total listings.")
         results = get_recentlyListed(listedCount, nftCollection)
-        print("Succesfully captured recently listed.")
+        print("3. Succesfully captured recently listed.")
         results = format_results(results)
-        print("Succesfully formatted list.")
+        print("4. Succesfully formatted list.")
         results = '\n'.join(str(e) for e in results)
-        print("Successfully changed list to string.")
+        print("5. Successfully changed list to string.")
         await message.channel.send(results)
 
 
