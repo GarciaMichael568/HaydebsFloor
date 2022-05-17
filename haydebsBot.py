@@ -6,6 +6,8 @@ import time
 import datetime
 import webbrowser
 import operator
+from dotenv import load_dotenv
+load_dotenv()
 #from requests.exceptions import ConnectionError
 #get listing to adjust offset: most recent listings
 #api-mainnet.magiceden.dev/v2/collections/:symbol/listings?offset=0&limit=20
@@ -16,7 +18,7 @@ import operator
 
 #https://magiceden.io/item-details/{tokenAddress}
 #buy/image
-my_secret = os.environ['Bullish']
+my_secret = os.getenv('Bullish')
 client = discord.Client()
 
 
@@ -94,5 +96,5 @@ async def on_message(message):
         await message.channel.send(results)
 
 
-
-client.run(my_secret)
+if __name__=="__main__":
+    client.run(my_secret)
