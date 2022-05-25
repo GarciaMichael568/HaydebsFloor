@@ -1,7 +1,5 @@
 import os
-import requests
 import discord
-import json
 import time
 import datetime
 import webbrowser
@@ -44,7 +42,8 @@ async def on_message(message):
         #check if dict is empty - todo
         nftCollection.format_results()
         nftCollection.format_output()
-        await message.channel.send(nftCollection.output)
+        #reformat time - todo
+        await message.channel.send(str(datetime.datetime.now()) + "\n" + nftCollection.output)
 
 
 if __name__=="__main__":
