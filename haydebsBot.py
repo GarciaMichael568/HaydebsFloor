@@ -1,9 +1,6 @@
 import os
 import discord
-import time
 import datetime
-import webbrowser
-import operator
 from features.recentFeature import Recent
 from dotenv import load_dotenv
 load_dotenv()
