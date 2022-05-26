@@ -37,13 +37,14 @@ async def on_message(message):
         nftCollection.message_to_underscore()
         nftCollection.get_totalListings()
         if (nftCollection.listedCount == -1):
-            await message.channel.send("Couldn't find token: " + message.content)
+            await message.channel.send("Couldn't find collection: " + message.content)
             return
         nftCollection.get_recentlyListed()
         #check if dict is empty - todo
         nftCollection.format_results()
         nftCollection.format_output()
         await message.channel.send(time1 + nftCollection.output)
+
 
 
 if __name__=="__main__":
