@@ -1,6 +1,7 @@
 import os
 import discord
-import datetime
+from datetime import datetime
+from pytz import timezone
 from features.recentFeature import Recent
 from dotenv import load_dotenv
 load_dotenv()
@@ -16,7 +17,10 @@ load_dotenv()
 #buy/image
 my_secret = os.getenv('Bullish')
 client = discord.Client()
- 
+ #call time
+now = datetime.now()
+format = "%m/%d/%Y %I:%M:%S"
+time1 = now.strftime(format) + "\n"
 #main
 @client.event
 async def on_ready():
@@ -39,8 +43,7 @@ async def on_message(message):
         #check if dict is empty - todo
         nftCollection.format_results()
         nftCollection.format_output()
-        #reformat time - todo
-        await message.channel.send(str(datetime.datetime.now()) + "\n" + nftCollection.output)
+        await message.channel.send(time1 + nftCollection.output)
 
 
 if __name__=="__main__":
